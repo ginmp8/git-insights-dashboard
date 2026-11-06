@@ -4,6 +4,7 @@ Notas por versão do Git Insights Dashboard, em ordem decrescente:
 
 | Versão documentada | Data registrada | Principais entregas | Notas |
 |---|---|---|---|
+| **0.3.0 — candidata** | Em desenvolvimento | Índice SQLite anual, contribuição por desenvolvedor e integração opcional de PRs/revisões | [0.3.0](0.3.0.md) |
 | 0.2.0 | 2026-11-05 | Descoberta de repositórios com gh, importação em lote e diagnóstico de churn ajustado | [0.2.0](0.2.0.md) |
 | 0.1.0 | Data não registrada | Dashboard local inicial, múltiplos repositórios, branches, métricas e exportação | [0.1.0](0.1.0.md) |
 

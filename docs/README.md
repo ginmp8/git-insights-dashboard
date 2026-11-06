@@ -9,6 +9,8 @@ Este diretório explica as funcionalidades efetivamente presentes no código do 
 
 ## Funcionalidades
 
+- [Contribuição anual de engenharia (0.3.0)](features/annual-contribution.md): indicadores por desenvolvedor, histórico integral, persistência SQLite e PRs/revisões opcionais.
+
 - [Projetos e repositórios](features/projects-and-repositories.md): cadastro, GitHub CLI, importação em lote e atualização dos espelhos.
 - [Dashboard, autores e arquivos](features/analytics-and-contributors.md): métricas, hotspots, filtros e exportação.
 - [Branches e comparações](features/branches-and-comparison.md): histórico deduplicado, ahead/behind e diferenças.
@@ -19,6 +21,6 @@ Este diretório explica as funcionalidades efetivamente presentes no código do 
 
 - [Histórico e notas por versão](../releases/README.md)
 - [Changelog resumido](../CHANGELOG.md)
-- [Evidências de testes disponíveis](../VALIDATION.md)
+- [Evidências da candidata 0.3.0](../VALIDATION-0.3.0.md) · [Evidências da 0.2.0](../VALIDATION.md)
 
-A documentação descreve o comportamento do repositório analisado em 2026-11-05. Resultados de testes e declarações de versão devem ser confrontados com o commit/tag usado na execução.
+A documentação da 0.3.0 descreve a candidata na branch de desenvolvimento, não uma release com tag publicada. Resultados de testes e declarações de versão devem ser confrontados com o commit/tag efetivamente utilizado.
