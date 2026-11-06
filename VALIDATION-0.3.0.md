@@ -31,6 +31,16 @@ Baseline importada do código publicado na 0.2.0: **27 testes passaram** antes d
 
 Tamanho SQLite no final: **83.120.128 bytes** (~79,3 MiB). Os dados simulam um arquivo Python pequeno modificado por commit, sem a distribuição de tamanho/complexidade de repositórios reais. As três execuções foram sequenciais (1 inicial e 2 com cache), **não** são repetições independentes de ambas as condições. Portanto não constituem benchmark estatístico comparativo nem promessa de desempenho em produção.
 
+## Extensão ICE-Git/1: evidência adicional nesta branch
+
+- `[passed]` 40 testes existentes antes desta extensão; 14 testes novos para score, sinais inválidos, coorte desbalanceada, proveniência por arquivo/commit, cache SQLite, CLI offline, mapeamento de PRs completo/incompleto e interface. Suite completa: **54 passed** (`python -m pytest -q`).
+- `[passed]` `python -m compileall -q app.py gitinsights scripts tests` (verificação sintática da candidata).
+- `[passed]` `python -m scripts.benchmark_ice --commits 50000 --authors 50 --heavy-author-commits 8000 --repeat 3` em Git sintético, sem rede e sem dados privados: **50.000 commits, 50 contribuidores**, 8.000 commits no autor mais ativo; SQLite **83.120.128 bytes**.
+- `[passed]` Indexação inicial: **14,791 s**. ICE-Git (somente consultas SQLite, 50 contribuintes) em três execuções sequenciais: **1,275 s**, **1,284 s**, **1,364 s**. Reexecutar indexador: **0 commits recalculados**.
+- `[passed]` A CLI `python -m scripts.score_ice_json --input docs/ice-git-example.json --policy docs/ice-git-policy.json` lê e pontua JSON sem rede/Git/Streamlit; rejeita sobrescrita de arquivo já existente.
+
+**Ressalva metodológica:** esse cenário gera alterações de um arquivo pequeno por commit. O benchmark não é um experimento independente em máquinas comparáveis e não mede influência real de alterações sobre qualidade ou negócio. A normalização P75, pesos e limites foram propostos como heurísticas auditáveis, **não calibrados nem validados contra resultados de entrega**. O score experimental não deve fundamentar avaliações formais de pessoas.
+
 ## Verificações não executadas
 
 - `[not run]` Interface Streamlit real no navegador (Streamlit indisponível no sandbox; houve somente smoke test headless de UI).

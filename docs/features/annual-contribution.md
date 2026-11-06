@@ -2,6 +2,8 @@
 
 A aba **Contribuição anual** foi implementada para análises de histórico integral por desenvolvedor, com métricas persistidas localmente. Ela aparece antes das abas legadas no dashboard Streamlit.
 
+A candidata 0.3.0 também possui o **[ICE-Git/1 — Índice de Evidências de Contribuição](ice-git.md)**, um score experimental relativo calculado a partir dos diffs persistidos, com limites por arquivo/commit e rastreabilidade. Não é uma medição objetiva de produtividade; a colaboração GitHub é uma dimensão separada e opcional.
+
 ## Como usar
 
 1. Selecione um projeto com repositórios Git no catálogo.

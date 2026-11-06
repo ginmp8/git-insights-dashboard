@@ -2,7 +2,7 @@
 
 Notas detalhadas por versão: [releases/README.md](releases/README.md).
 
-## 0.3.0 — candidata, branch feature/0.3.0-incremental-metrics (não publicada)
+## 0.3.0 — candidata, branch feature/0.3.0-incremental-metrics (não publicada)\n\n- Novo **ICE-Git/1** por contribuidor: índices relativos Git (0–100), dimensões de entrega integrada, diffs técnicos com crédito limitado por arquivo/commit e sinais de testes/docs; modalidade ampliada opcional com PRs/revisões GitHub completos e mapeados, rastreabilidade por SHA, policy JSON, API e CLI reutilizável. Não representa medida objetiva de produtividade.
 
 - Nova aba **Contribuição anual** com cobertura integral dos commits alcançáveis por referência Git selecionada, indicadores por desenvolvedor, evolução mensal e exportação CSV/JSON.
 - Cache persistente e incremental em SQLite: dados por SHA, arquivos, métricas e membresia de refs; mudanças de identidade `.mailmap` e rebases reconciliados sem recalcular diffs antigos.

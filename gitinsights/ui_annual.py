@@ -12,6 +12,7 @@ from .git_engine import GitError, get_branches
 from .export import csv_bytes
 from .github import list_pr_collaboration, parse_github_repo
 from .incremental import MetricsStore, annual_report, choose_integration_ref, sync_repository
+from .ice_score import score_annual_store
 
 
 def _table_rows(report: dict) -> list[dict]:
@@ -72,6 +73,65 @@ def _save_identity_ui(store: MetricsStore, report: dict, project_id: str):
                     st.rerun()
                 except ValueError as exc:
                     st.error(str(exc))
+
+
+
+def _render_ice_git(scores: dict, project_id: str) -> None:
+    """Explain comparative evidence scores, without claiming objective productivity."""
+    st.markdown('#### ICE-Git · evidências de contribuição (experimental)')
+    st.caption('Índice relativo 0–100 calculado sobre diffs persistidos por arquivo e commit. '
+               'Não é nota de produtividade, qualidade ou impacto comprovados. '
+               'Compare somente pessoas em funções e escopos semelhantes.')
+    if scores.get('status') != 'ok':
+        st.info('ICE-Git indisponível: são necessários pelo menos três contribuidores e um histórico Git completo.')
+        return
+    refs=scores['references']
+    st.caption(f"Grupo comparável: {refs['size']} contribuidores · Referência: percentil 75 "
+               'de commits materiais e diffs limitados · ICE-Git cobre 85% do modelo. '
+               'A colaboração (15%) depende de snapshots completos e contas GitHub associadas.')
+    sorted_scores=sorted(scores['contributors'], key=lambda r: (-(r['ice_git'] or 0),r['email']))
+    table=[{
+        'Desenvolvedor':r['author'], 'E-mail':r['email'],
+        'ICE-Git · evidência relativa':r['ice_git'],
+        'ICE+ com colaboração':r['ice_combined'],
+        'Cobertura dos pesos (%)':r['coverage_percent'],
+        'Entrega integrada':r['components']['delivery'],
+        'Diff técnico':r['components']['technical_diff'],
+        'Testes/docs observáveis':r['components']['support_evidence'],
+        'PRs/revisões':r['components']['collaboration'],
+        'Commits materiais':r['material_commits'],
+        'Unidades de diff limitadas':round(r['bounded_diff_credit'],2),
+        'Commits com testes/docs':r['supported_commits'],
+    } for r in sorted_scores]
+    st.dataframe(pd.DataFrame(table),hide_index=True,width='stretch',height=440)
+    st.download_button('Exportar ICE-Git por desenvolvedor (CSV)',csv_bytes(table),
+                       f'git-insights-ice-{scores["year"]}.csv','text/csv',on_click='ignore')
+    by_email={r['email']:r for r in sorted_scores}
+    selected=st.selectbox('Auditar evidências ICE-Git do desenvolvedor',list(by_email),
+                          format_func=lambda e:f"{by_email[e]['author']} ({e})",
+                          key=f'ice-git-dev-{project_id}')
+    rec=by_email[selected]
+    cols=st.columns(5)
+    for col,(label,key) in zip(cols,[
+        ('ICE-Git', 'ice_git'),('ICE ampliado', 'ice_combined'),
+        ('Entrega', 'delivery'),('Diff técnico', 'technical_diff'),
+        ('Testes/docs', 'support_evidence')]):
+        value=rec[key] if key in rec else rec['components'].get(key)
+        col.metric(label,f'{value:.1f}' if value is not None else 'N/D')
+    with st.expander('Rastrear arquivos e commits usados no índice'):
+        st.caption('Amostra dos arquivos com maior alteração ajustada por peso, até '
+                   f"{scores['policy']['max_trace_files']} por desenvolvedor. A fonte integral permanece no SQLite; "
+                   'esta lista não representa toda a contribuição.')
+        if rec.get('file_evidence'):
+            st.dataframe(pd.DataFrame(rec['file_evidence']),hide_index=True,width='stretch',height=280)
+        else:
+            st.info('Sem diff textual elegível: alterações cosméticas, arquivos gerados e binários não geram crédito.')
+        st.write({'dimensões':rec['components'], 'commits_materiais':rec['material_commits'],
+                  'referências_da_turma':scores['references'],'metodologia':scores['methodology']})
+    st.download_button('Exportar evidências e política ICE-Git (JSON)',
+                       json.dumps(scores,ensure_ascii=False,indent=2),
+                       f'git-insights-ice-evidencias-{scores["year"]}.json',
+                       'application/json',on_click='ignore')
 
 
 def render_annual(project: dict, repos: list[dict], db_path: Path) -> None:
@@ -155,6 +215,8 @@ def render_annual(project: dict, repos: list[dict], db_path: Path) -> None:
                        'Não inclui alterações fora das referências selecionadas nem commits eliminados por squash.')
         if not report['pr_metadata_complete']:
             st.caption('PRs e revisões não possuem snapshot completo para todos os repositórios; células vazias significam dados indisponíveis, não zero.')
+        scores=score_annual_store(store,[(r['id'],ref) for r,ref in selections],year,report=report)
+        report['ice_git']=scores  # export one evidence-linked, policy-versioned snapshot
         contributors=report['contributors']
         if not contributors:
             st.info('Não há commits indexados para o ano/filtros. Se for o primeiro uso, clique em Indexar / atualizar.')
@@ -180,6 +242,7 @@ def render_annual(project: dict, repos: list[dict], db_path: Path) -> None:
         st.download_button('Exportar indicadores anuais (CSV)',
                            csv_bytes(rows),
                            f'git-insights-contribuidores-{year}.csv','text/csv',on_click='ignore')
+        _render_ice_git(scores,project['id'])
         st.markdown('#### Evolução mensal por desenvolvedor')
         by_email={row['email']:row for row in contributors}
         dev_email=st.selectbox('Contribuidor',

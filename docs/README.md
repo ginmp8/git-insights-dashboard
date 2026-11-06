@@ -9,7 +9,7 @@ Este diretório explica as funcionalidades efetivamente presentes no código do 
 
 ## Funcionalidades
 
-- [Contribuição anual de engenharia (0.3.0)](features/annual-contribution.md): indicadores por desenvolvedor, histórico integral, persistência SQLite e PRs/revisões opcionais.
+- [ICE-Git/1: score relativo auditável e reutilizável](features/ice-git.md): diffs por arquivo/commit, componentes e política versionada (não é produtividade objetiva).\n- [Contribuição anual de engenharia (0.3.0)](features/annual-contribution.md): indicadores por desenvolvedor, histórico integral, persistência SQLite e PRs/revisões opcionais.
 
 - [Projetos e repositórios](features/projects-and-repositories.md): cadastro, GitHub CLI, importação em lote e atualização dos espelhos.
 - [Dashboard, autores e arquivos](features/analytics-and-contributors.md): métricas, hotspots, filtros e exportação.

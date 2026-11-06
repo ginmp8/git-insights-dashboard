@@ -1,0 +1,6 @@
+[
+  {"email":"dev-a@example.org","author":"Developer A","commits":8000,"material_commits":0,"bounded_diff_credit":0,"supported_commits":0,"merged_prs":null,"reviews_submitted":null},
+  {"email":"dev-b@example.org","author":"Developer B","commits":1000,"material_commits":700,"bounded_diff_credit":415.2,"supported_commits":105,"merged_prs":null,"reviews_submitted":null},
+  {"email":"dev-c@example.org","author":"Developer C","commits":1200,"material_commits":780,"bounded_diff_credit":431.3,"supported_commits":120,"merged_prs":null,"reviews_submitted":null},
+  {"email":"dev-d@example.org","author":"Developer D","commits":900,"material_commits":630,"bounded_diff_credit":400.1,"supported_commits":140,"merged_prs":null,"reviews_submitted":null}
+]

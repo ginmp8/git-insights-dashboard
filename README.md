@@ -11,7 +11,7 @@ Este é o repositório oficial do **Git Insights Dashboard**: um aplicativo **lo
 
 - [Guia de funcionalidades](docs/README.md) · [Primeiros passos](docs/getting-started.md) · [Privacidade](docs/privacy-and-security.md)
 - [Projetos e repositórios](docs/features/projects-and-repositories.md) · [Métricas e autores](docs/features/analytics-and-contributors.md) · [Branches](docs/features/branches-and-comparison.md)
-- [Contribuição anual 0.3.0](docs/features/annual-contribution.md) · [Mudanças ajustadas](docs/features/change-quality.md) · [GitHub CLI e PRs](docs/features/github-integration.md)
+- [Contribuição anual 0.3.0](docs/features/annual-contribution.md) · [ICE-Git/1 · score experimental](docs/features/ice-git.md) · [Mudanças ajustadas](docs/features/change-quality.md) · [GitHub CLI e PRs](docs/features/github-integration.md)
 - [Histórico de versões](releases/README.md) · [Candidata 0.3.0](releases/0.3.0.md) · [Notas da 0.2.0](releases/0.2.0.md) · [Notas da 0.1.0](releases/0.1.0.md) · [Changelog](CHANGELOG.md)
 
 
@@ -29,7 +29,7 @@ Abra **http://127.0.0.1:8501**. Para listar repositórios de sua conta (inclusiv
 
 ## Funcionalidades implementadas
 
-- **Contribuição anual (candidata 0.3.0, branch de desenvolvimento)**: aba inicial com commits integrados, churn bruto/move/whitespace, mudanças substantivas e cosméticas, atividade de autores, arquivos de código/testes/docs/gerados, PRs/revisões opcionais e evolução mensal; todos os commits alcançáveis pela referência selecionada são indexados em SQLite local com atualização incremental por SHA.
+- **ICE-Git/1 (candidata 0.3.0):** índice de evidências de contribuição por desenvolvedor, relativo ao grupo, com crédito limitado por diff de arquivo/commit, P75, componentes explícitos, rastreio por SHA e política versionada reutilizável. O índice não comprova produtividade individual ou impacto de negócio; a dimensão GitHub é opcional e indisponível sem dados completos.\n- **Contribuição anual (candidata 0.3.0, branch de desenvolvimento)**: aba inicial com commits integrados, churn bruto/move/whitespace, mudanças substantivas e cosméticas, atividade de autores, arquivos de código/testes/docs/gerados, PRs/revisões opcionais e evolução mensal; todos os commits alcançáveis pela referência selecionada são indexados em SQLite local com atualização incremental por SHA.
 
 - **Projetos com vários repositórios**, com leitura de pastas locais ou espelhos GitHub criados ao clicar em Adicionar.
 - **Visão consolidada**: commits, contribuidores, linhas adicionadas/removidas, churn, histórico diário e comparação entre repositórios.
@@ -148,7 +148,7 @@ Para analisar contribuição com mais confiança, cruzar essas métricas com PRs
 
 ## Testes e validação
 
-Os resultados da candidata 0.3.0 estão em [VALIDATION-0.3.0.md](VALIDATION-0.3.0.md). A execução local registrou 40 testes aprovados e benchmark sintético de 50.000 commits; Streamlit real/gh autenticado não foram exercitados neste sandbox.
+Os resultados da candidata 0.3.0 estão em [VALIDATION-0.3.0.md](VALIDATION-0.3.0.md). A execução local registrou 54 testes aprovados e benchmark sintético de 50.000 commits; Streamlit real/gh autenticado não foram exercitados neste sandbox.
 
 ```sh
 python -m pip install -r requirements-dev.txt
