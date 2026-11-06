@@ -428,6 +428,10 @@ def sync_repository(store: MetricsStore, repo_id: str, repo_path: str | Path, re
     repo_path=Path(repo_path).expanduser().resolve()
     if not git_is_repo(repo_path):
         raise GitError('Diretório não contém um repositório Git.')
+    shallow = _run(repo_path, 'rev-parse', '--is-shallow-repository', timeout=15).strip()
+    if shallow != b'false':
+        raise GitError('Clone Git shallow (raso): histórico anterior pode estar ausente. '
+                       'Obtenha explicitamente o histórico completo antes de indexar.')
     initial=_ref_head(repo_path,ref)
     history=_history(repo_path,ref)
     existing=store.indexed_shas(repo_id)
@@ -465,6 +469,7 @@ def annual_report(store: MetricsStore, selections: Iterable[tuple[str,str]], yea
     monthly: dict[tuple[str,str],dict[str,Any]]={}
     totals={k:0 for k in _METRIC_COLUMNS}
     processed=0
+    seen_commits: set[tuple[str,str]] = set()
     missing_refs=[]
     repo_coverage=[]
     start=f'{year:04d}-01-01'
@@ -477,12 +482,16 @@ def annual_report(store: MetricsStore, selections: Iterable[tuple[str,str]], yea
             continue
         repo_coverage.append({'repo_id':repo_id,'ref':ref,'indexed_at':state['indexed_at'],
                               'head_sha':state['head_sha'],'history_commits':state['eligible_commits']})
-        sql='''SELECT c.email,c.author,c.authored_at,m.* FROM ref_commits rc
+        sql='''SELECT c.sha,c.email,c.author,c.authored_at,m.* FROM ref_commits rc
             JOIN commits c ON c.repo_id=rc.repo_id AND c.sha=rc.sha
             JOIN commit_metrics m ON m.repo_id=c.repo_id AND m.sha=c.sha
             WHERE rc.repo_id=? AND rc.ref=? AND c.authored_at>=? AND c.authored_at<?
             AND c.analysis_version=?'''
         for row in store.db.execute(sql,(repo_id,ref,start,end,ANALYSIS_VERSION)):
+            commit_key = (repo_id, row['sha'])
+            if commit_key in seen_commits:
+                continue
+            seen_commits.add(commit_key)
             processed+=1
             source_email=row['email'].lower()
             email=aliases.get(source_email,source_email)
@@ -540,8 +549,8 @@ def annual_report(store: MetricsStore, selections: Iterable[tuple[str,str]], yea
         rec['reviews_approved']=reviews['approvals']
     return {
         'year':year,'eligible_commits':processed,'processed_commits':processed,
-        'coverage_percent':100 if not missing_refs else None,
-        'complete':not missing_refs,'missing_repositories':missing_refs,
+        'coverage_percent':100 if refs and not missing_refs else None,
+        'complete':bool(refs) and not missing_refs,'missing_repositories':missing_refs,
         'repo_coverage':repo_coverage,'totals':totals,
         'contributors':sorted(contributors.values(),key=lambda r:(-r['commits'],r['email'])),
         'monthly':sorted(monthly.values(),key=lambda r:(r['month'],r['email'])),

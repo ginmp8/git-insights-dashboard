@@ -202,3 +202,44 @@ def test_mailmap_changes_refresh_cached_author_identity(tmp_path, repo):
         assert any(x['email']=='canonical@example.com' for x in result['contributors'])
         assert not any(x['email']=='alice@example.com' for x in result['contributors'])
         assert sum(x['commits'] for x in result['contributors'])==5
+
+def test_empty_selection_does_not_claim_complete_coverage(tmp_path):
+    from gitinsights.ice_score import score_annual_store
+
+    with MetricsStore(tmp_path / 'empty-selection.db') as store:
+        report = annual_report(store, [], 2026)
+        assert report['complete'] is False
+        assert report['coverage_percent'] is None
+        result = score_annual_store(store, [], 2026)
+        assert result['status'] == 'incomplete_history'
+        assert result['contributors'] == []
+
+
+def test_overlapping_integration_refs_count_shared_shas_once(tmp_path, repo):
+    from gitinsights.ice_score import score_annual_store
+
+    refs = [('r', 'refs/heads/main'), ('r', 'refs/heads/unmerged')]
+    with MetricsStore(tmp_path / 'overlapping-refs.db') as store:
+        for repo_id, ref in refs:
+            sync_repository(store, repo_id, repo, ref)
+        unique_shas = set(git(repo, 'rev-list', 'refs/heads/main').splitlines())
+        unique_shas.update(git(repo, 'rev-list', 'refs/heads/unmerged').splitlines())
+        report = annual_report(store, refs, 2026)
+        assert len(unique_shas) == 5
+        assert report['eligible_commits'] == len(unique_shas)
+        assert sum(x['commits'] for x in report['contributors']) == len(unique_shas)
+        scores = score_annual_store(store, refs, 2026, report=report)
+        assert scores['complete'] is True
+        assert sum(x['material_commits'] for x in scores['contributors']) == 3
+
+
+def test_shallow_clone_does_not_claim_full_annual_history(tmp_path, repo):
+    shallow = tmp_path / 'shallow'
+    subprocess.run(['git', 'clone', '--quiet', '--depth', '1', '--branch', 'main',
+                    repo.as_uri(), str(shallow)],
+                   check=True, capture_output=True, text=True)
+    assert git(shallow, 'rev-parse', '--is-shallow-repository') == 'true'
+    with MetricsStore(tmp_path / 'shallow.db') as store:
+        with pytest.raises(GitError, match='shallow'):
+            sync_repository(store, 'r', shallow, 'refs/heads/main')
+        assert store.db.execute('SELECT COUNT(*) FROM ref_state').fetchone()[0] == 0

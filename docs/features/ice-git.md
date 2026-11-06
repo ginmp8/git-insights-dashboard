@@ -55,6 +55,8 @@ O índice lê **`file_changes` no SQLite** (`mode='adjusted'`) para cada commit 
 
 **Exemplo:** 8.000 commits que só geram lockfiles/cosmética recebem **zero crédito material de diff**. Já centenas de commits com modificações reais em código, testes ou documentação produzem crédito; grandes mudanças são limitadas por arquivo e commit. Isso **não permite afirmar** que o segundo desenvolvedor entregou mais valor de negócio ou código de maior qualidade.
 
+**Cobertura e deduplicação:** uma análise de clone raso é recusada, pois a profundidade insuficiente pode ocultar commits antigos. Quando múltiplas referências do mesmo repositório são selecionadas por consumidores da API, o mesmo SHA é contado somente uma vez nos indicadores anuais e no ICE-Git; repositórios distintos permanecem independentes. Sem referências selecionadas, os scores são indisponíveis.
+
 ## Confiabilidade e comparabilidade
 
 - **Cobertura Git:** exige indexação integral do histórico alcançável das refs escolhidas. Se a ref mudar, a interface suspende o score até indexar novamente.

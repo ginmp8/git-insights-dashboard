@@ -36,6 +36,8 @@ A candidata 0.3.0 também possui o **[ICE-Git/1 — Índice de Evidências de Co
 
 **Não existe escore universal de produtividade por desenvolvedor.** A comparação entre pessoas requer contexto de função, tipos de tarefa, revisão, incidentes, impacto do produto e períodos de disponibilidade. Não utilize um ranking de linhas ou commits como avaliação de desempenho.
 
+**Integridade da cobertura:** clones rasos (*shallow clones*) não permitem comprovar que todo o histórico anual está presente. A indexação agora é bloqueada quando `git rev-parse --is-shallow-repository` retorna `true`; para analisar o ano completo, obtenha o histórico integral explicitamente (por exemplo, com `git fetch --unshallow`, se aplicável). Não há fetch automático. Selecionar mais de uma referência do mesmo repositório produz a união de SHAs, sem contar commits compartilhados duas vezes. Uma seleção vazia nunca declara cobertura de 100%.
+
 ## Persistência incremental
 
 O aplicativo utiliza o arquivo local `.git-insights-data/annual-metrics.sqlite3` (ou o diretório configurado por `GIT_INSIGHTS_HOME`), sem serviço externo de banco de dados.

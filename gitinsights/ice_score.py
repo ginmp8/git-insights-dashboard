@@ -196,6 +196,7 @@ def score_annual_store(store: MetricsStore, selections: Iterable[tuple[str, str]
     start = f'{year:04d}-01-01'; end = f'{year + 1:04d}-01-01'
     weights = {'source':p.source_file_weight,'test':p.test_file_weight,'docs':p.docs_file_weight}
     cap_scale = math.log1p(p.max_weighted_lines_per_commit)
+    seen_commits: set[tuple[str,str]] = set()
     for repo_id, ref in refs:
         sql = '''SELECT c.sha,c.email,fc.path,fc.additions,fc.deletions,fc.binary
             FROM ref_commits rc JOIN commits c ON c.repo_id=rc.repo_id AND c.sha=rc.sha
@@ -205,6 +206,10 @@ def score_annual_store(store: MetricsStore, selections: Iterable[tuple[str, str]
         cursor = store.db.execute(sql, (repo_id,ref,start,end,ANALYSIS_VERSION))
         for sha, items in groupby(cursor, key=lambda r:r['sha']):
             per_commit = list(items)
+            commit_key = (repo_id, sha)
+            if commit_key in seen_commits:
+                continue
+            seen_commits.add(commit_key)
             canonical = aliases.get(per_commit[0]['email'].lower(),per_commit[0]['email'].lower())
             record = by_email.setdefault(canonical, {'email':canonical,'material_commits':0,
                                                        'bounded_diff_credit':0.0,'supported_commits':0})
