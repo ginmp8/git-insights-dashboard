@@ -77,3 +77,32 @@ def test_catalog_records_gh_auth_for_refresh(tmp_path, monkeypatch):
     project = catalog.add_project('my team')
     entry = catalog.add_mirror_repo(project, str(tmp_path / 'mirror'), 'https://github.com/team/repo.git', 'team/repo', auth_via_gh=True)
     assert next(r for r in catalog.get_project(project)['repos'] if r['id'] == entry)['auth_via_gh'] is True
+
+
+def test_pr_collaboration_snapshot_is_explicit_and_normalized(monkeypatch):
+    import gitinsights.github as github
+    import json
+    from types import SimpleNamespace
+    calls=[]
+    payload=[{'number': 22, 'state': 'MERGED', 'author': {'login':'alice'},
+              'createdAt':'2026-02-01T00:00:00Z','mergedAt':'2026-02-02T00:00:00Z',
+              'url':'https://github.com/acme/repo/pull/22',
+              'reviews':[{'author':{'login':'bob'},'state':'APPROVED',
+                          'submittedAt':'2026-02-02T00:00:00Z'}]}]
+    def fake_run(args, **kwargs):
+        calls.append(args)
+        return SimpleNamespace(returncode=0,stdout=json.dumps(payload),stderr='')
+    monkeypatch.setattr(github.subprocess,'run',fake_run)
+    results,complete=github.list_pr_collaboration('acme/repo',limit=100)
+    assert complete
+    assert results[0]['author_login']=='alice'
+    assert results[0]['reviews'][0]['login']=='bob'
+    assert calls[0][:4]==['gh','pr','list','--repo']
+    assert 'reviews' in calls[0][-1]
+
+
+def test_pr_collaboration_rejects_untrusted_repository(monkeypatch):
+    import gitinsights.github as github
+    import pytest
+    with pytest.raises(github.GitError):
+        github.list_pr_collaboration('acme/repo;echo-secret')

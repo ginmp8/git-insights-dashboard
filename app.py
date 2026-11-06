@@ -23,6 +23,7 @@ from gitinsights.export import csv_bytes
 from gitinsights.remote import clone_mirror, refresh_mirror
 from gitinsights.ui_repository_picker import render_github_picker
 from gitinsights.ui_change_quality import render_change_quality
+from gitinsights.ui_annual import render_annual
 
 
 st.set_page_config(page_title='Git Insights | Local', page_icon=':bar_chart:', layout='wide', initial_sidebar_state='expanded')
@@ -546,7 +547,7 @@ def main() -> None:
         st.warning('A branch escolhida não existe em: ' + ', '.join(missing))
     cut_repos = [name for name, value in truncated.items() if value]
     if cut_repos:
-        st.warning('Amostra limitada por repositório: ' + ', '.join(cut_repos) + '. Selecione Sem limite para métricas históricas completas.')
+        st.warning('Visões legadas com limite de commits: ' + ', '.join(cut_repos) + '. A aba Contribuição anual usa índice SQLite separado, sem esse limite.')
     if not repo_commits:
         st.error('Nenhum repositório selecionado pôde ser analisado.')
         return
@@ -572,9 +573,12 @@ def main() -> None:
     if not filtered:
         st.info('Nenhum commit corresponde aos filtros selecionados. As abas de branches e PRs continuam disponíveis.')
     st.divider()
-    tab_overview, tab_contrib, tab_files, tab_quality, tab_branches, tab_prs, tab_commits = st.tabs([
-        'Visão geral', 'Contribuidores', 'Arquivos', 'Mudanças ajustadas', 'Branches', 'Pull requests', 'Commits e exportação',
+    tab_annual, tab_overview, tab_contrib, tab_files, tab_quality, tab_branches, tab_prs, tab_commits = st.tabs([
+        'Contribuição anual', 'Visão geral', 'Contribuidores', 'Arquivos', 'Mudanças ajustadas',
+        'Branches', 'Pull requests', 'Commits e exportação',
     ])
+    with tab_annual:
+        render_annual(project, selected_repos, DATA_HOME / 'annual-metrics.sqlite3')
     with tab_overview:
         render_overview(metrics, filtered, len(repo_commits))
     with tab_contrib:

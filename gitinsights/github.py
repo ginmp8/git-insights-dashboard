@@ -120,3 +120,59 @@ def list_accessible_repositories(max_repositories: int = 5000) -> list[dict]:
     except (ValueError, TypeError, json.JSONDecodeError, CatalogError) as exc:
         raise GitError('O GitHub CLI retornou uma resposta de formato inválido.') from exc
     return sorted(result.values(), key=lambda item: item['full_name'].casefold())
+
+
+def list_pr_collaboration(repo: str, limit: int = 5000) -> tuple[list[dict], bool]:
+    """Explicit, bounded GitHub PR/review snapshot; never called on UI rerender.
+
+    A complete=True only means we did not hit the requested gh list limit;
+    GitHub API visibility, pagination and review availability remain external.
+    """
+    if not re.fullmatch(r'[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+', repo):
+        raise GitError('Repositório GitHub inválido.')
+    if not 1 <= limit <= 20000:
+        raise ValueError('Limite de PRs deve estar entre 1 e 20000.')
+    fields = 'number,state,author,createdAt,mergedAt,url,reviews'
+    args = ['gh', 'pr', 'list', '--repo', repo, '--state', 'all',
+            '--limit', str(limit), '--json', fields]
+    env = os.environ.copy()
+    env['GH_PROMPT_DISABLED'] = '1'
+    env['GH_PAGER'] = 'cat'
+    try:
+        process = subprocess.run(args, capture_output=True, text=True, timeout=300, env=env)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        raise GitError('GitHub CLI indisponível ou consulta de PRs expirou.') from exc
+    if process.returncode:
+        # Avoid copying provider stderr, which may include sensitive metadata.
+        raise GitError('Consulta de PRs falhou. Confira gh auth status, permissões e rede.')
+    try:
+        items = json.loads(process.stdout)
+    except json.JSONDecodeError as exc:
+        raise GitError('GitHub CLI retornou JSON inválido.') from exc
+    if not isinstance(items, list) or len(items) > limit:
+        raise GitError('Resposta de Pull Requests inesperada.')
+    result = []
+    for pr in items:
+        if not isinstance(pr, dict):
+            raise GitError('Resposta com Pull Request inválido.')
+        author = (pr.get('author') or {}).get('login')
+        if not author:
+            # Deleted/anonymous GitHub accounts cannot be attributed to a
+            # validated login. Keep the snapshot explicitly incomplete.
+            continue
+        reviews=[]
+        if not isinstance(pr.get('reviews'), list):
+            raise GitError('API de PR não retornou o histórico de revisões esperado.')
+        for review in pr.get('reviews') or []:
+            user=(review.get('author') or {}).get('login')
+            if user and review.get('submittedAt'):
+                reviews.append({'login':user,'state':review.get('state') or '',
+                                'submitted_at':review['submittedAt']})
+        result.append({
+            'number':pr['number'],'author_login':author,
+            'created_at':pr.get('createdAt') or '',
+            'merged_at':pr.get('mergedAt') or '',
+            'state':pr.get('state') or '',
+            'url':pr['url'],'reviews':reviews,
+        })
+    return result, len(items) < limit and len(result) == len(items)
