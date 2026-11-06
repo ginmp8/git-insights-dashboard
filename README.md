@@ -6,6 +6,15 @@
 
 Este é o repositório oficial do **Git Insights Dashboard**: um aplicativo **local-first** para acompanhar commits, contribuidores, branches, churn, movimentações de arquivos, hotspots e Pull Requests de vários repositórios. Inspirado nas funcionalidades de [Git Insights](https://github.com/Wasserpuncher/git-insights) e [Gita](https://github.com/janmikolas/gita), com implementação independente.
 
+
+## Documentação e histórico de versões
+
+- [Guia de funcionalidades](docs/README.md) · [Primeiros passos](docs/getting-started.md) · [Privacidade](docs/privacy-and-security.md)
+- [Projetos e repositórios](docs/features/projects-and-repositories.md) · [Métricas e autores](docs/features/analytics-and-contributors.md) · [Branches](docs/features/branches-and-comparison.md)
+- [Mudanças ajustadas](docs/features/change-quality.md) · [GitHub CLI e PRs](docs/features/github-integration.md)
+- [Histórico de versões](releases/README.md) · [Notas da 0.2.0](releases/0.2.0.md) · [Notas da 0.1.0](releases/0.1.0.md) · [Changelog](CHANGELOG.md)
+
+
 **Início rápido (Windows):** tenha Python 3.11+ e Git instalados; clone este repositório e execute o inicializador.
 
 ```powershell

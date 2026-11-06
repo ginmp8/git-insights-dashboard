@@ -1,5 +1,7 @@
 # Histórico
 
+Notas detalhadas por versão: [releases/README.md](releases/README.md).
+
 ## 0.2.0 — 2026-11-05
 
 - Adicionada descoberta de repositórios acessíveis via GitHub CLI (próprios, colaboração e organizações), com paginação, filtros e importação em lote; não é necessário copiar URLs ou confirmar cada clone individualmente.
