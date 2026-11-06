@@ -2,7 +2,7 @@
 
 **Dashboard local de análise de engenharia Git, desenvolvido em Python + Streamlit.**
 
-![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white) ![Streamlit](https://img.shields.io/badge/Streamlit-1.50%2B-FF4B4B?logo=streamlit&logoColor=white) ![Version](https://img.shields.io/badge/version-0.2.0-5E9B6B) ![License](https://img.shields.io/badge/license-MIT-blue)
+![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white) ![Streamlit](https://img.shields.io/badge/Streamlit-1.50%2B-FF4B4B?logo=streamlit&logoColor=white) **Versão 0.2.0** ![License](https://img.shields.io/badge/license-MIT-blue)
 
 Este é o repositório oficial do **Git Insights Dashboard**: um aplicativo **local-first** para acompanhar commits, contribuidores, branches, churn, movimentações de arquivos, hotspots e Pull Requests de vários repositórios. Inspirado nas funcionalidades de [Git Insights](https://github.com/Wasserpuncher/git-insights) e [Gita](https://github.com/janmikolas/gita), com implementação independente.
 
