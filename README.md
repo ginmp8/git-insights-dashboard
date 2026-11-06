@@ -29,7 +29,8 @@ Abra **http://127.0.0.1:8501**. Para listar repositórios de sua conta (inclusiv
 
 ## Funcionalidades implementadas
 
-- **ICE-Git/1 (candidata 0.3.0):** índice de evidências de contribuição por desenvolvedor, relativo ao grupo, com crédito limitado por diff de arquivo/commit, P75, componentes explícitos, rastreio por SHA e política versionada reutilizável. O índice não comprova produtividade individual ou impacto de negócio; a dimensão GitHub é opcional e indisponível sem dados completos.\n- **Contribuição anual (candidata 0.3.0, branch de desenvolvimento)**: aba inicial com commits integrados, churn bruto/move/whitespace, mudanças substantivas e cosméticas, atividade de autores, arquivos de código/testes/docs/gerados, PRs/revisões opcionais e evolução mensal; todos os commits alcançáveis pela referência selecionada são indexados em SQLite local com atualização incremental por SHA.
+- **ICE-Git/1 (candidata 0.3.0):** índice de evidências de contribuição por desenvolvedor, relativo ao grupo, com crédito limitado por diff de arquivo/commit, P75, componentes explícitos, rastreio por SHA e política versionada reutilizável. O índice não comprova produtividade individual ou impacto de negócio; a dimensão GitHub é opcional e indisponível sem dados completos.
+- **Contribuição anual (candidata 0.3.0, branch de desenvolvimento)**: aba inicial com commits integrados, churn bruto/move/whitespace, mudanças substantivas e cosméticas, atividade de autores, arquivos de código/testes/docs/gerados, PRs/revisões opcionais e evolução mensal; todos os commits alcançáveis pela referência selecionada são indexados em SQLite local com atualização incremental por SHA.
 
 - **Projetos com vários repositórios**, com leitura de pastas locais ou espelhos GitHub criados ao clicar em Adicionar.
 - **Visão consolidada**: commits, contribuidores, linhas adicionadas/removidas, churn, histórico diário e comparação entre repositórios.

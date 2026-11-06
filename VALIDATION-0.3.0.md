@@ -49,3 +49,14 @@ Tamanho SQLite no final: **83.120.128 bytes** (~79,3 MiB). Os dados simulam um a
 - `[not run]` Benchmark em repositórios reais de produção, carga de memória, histórico com múltiplos arquivos grandes ou tempo de indexação em armazenamento de rede.
 
 **Regra de interpretação:** a cobertura Git anual de 100% é relativa à referência e ao ano selecionados. Dados de PRs não têm cobertura garantida sem inspeção do snapshot. Nenhum indicador valida produtividade individual ou qualidade sem contexto externo.
+
+## Validação CI adicional — integridade de cobertura
+
+As verificações abaixo foram executadas no GitHub Actions em **2026-11-06**, sobre o commit `17755bb441f3a78a6088b6cdc733ee9b0df5f6cd`:
+
+- `[passed]` Python 3.11: `python -m compileall -q app.py gitinsights scripts tests` e `python -m pytest -q` (**57 passed in 2.32s**).
+- `[passed]` Python 3.13: os mesmos checks (**57 passed in 2.94s**).
+- `[passed]` Três novos testes de integridade: clone Git raso não publica cobertura integral, seleção vazia não reporta 100%, e referências com SHAs compartilhados não duplicam commits nem evidências no ICE-Git.
+- [Execução do GitHub Actions](https://github.com/ginmp8/git-insights-dashboard/actions/runs/42171346006).
+
+Após essa execução, o workflow passou a disparar uma vez por PR e em pushes da `main`, com ações oficiais fixadas por SHA. Os números de execução acima pertencem ao commit identificado, não a benchmarks repetidos. Testes no navegador, ambientes Windows e coleta GitHub CLI autenticada continuam **não executados**, assim como benchmarks representativos em repositórios reais.
