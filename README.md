@@ -11,8 +11,8 @@ Este é o repositório oficial do **Git Insights Dashboard**: um aplicativo **lo
 
 - [Guia de funcionalidades](docs/README.md) · [Primeiros passos](docs/getting-started.md) · [Privacidade](docs/privacy-and-security.md)
 - [Projetos e repositórios](docs/features/projects-and-repositories.md) · [Métricas e autores](docs/features/analytics-and-contributors.md) · [Branches](docs/features/branches-and-comparison.md)
-- [Mudanças ajustadas](docs/features/change-quality.md) · [GitHub CLI e PRs](docs/features/github-integration.md)
-- [Histórico de versões](releases/README.md) · [Notas da 0.2.0](releases/0.2.0.md) · [Notas da 0.1.0](releases/0.1.0.md) · [Changelog](CHANGELOG.md)
+- [Contribuição anual 0.3.0](docs/features/annual-contribution.md) · [ICE-Git/1 · score experimental](docs/features/ice-git.md) · [Mudanças ajustadas](docs/features/change-quality.md) · [GitHub CLI e PRs](docs/features/github-integration.md)
+- [Histórico de versões](releases/README.md) · [Candidata 0.3.0](releases/0.3.0.md) · [Notas da 0.2.0](releases/0.2.0.md) · [Notas da 0.1.0](releases/0.1.0.md) · [Changelog](CHANGELOG.md)
 
 
 **Início rápido (Windows):** tenha Python 3.11+ e Git instalados; clone este repositório e execute o inicializador.
@@ -28,6 +28,9 @@ Abra **http://127.0.0.1:8501**. Para listar repositórios de sua conta (inclusiv
 **Importante:** o dashboard foi projetado para uma única máquina. Não exponha a porta 8501 publicamente; a aplicação não possui autenticação de usuários.
 
 ## Funcionalidades implementadas
+
+- **ICE-Git/1 (candidata 0.3.0):** índice de evidências de contribuição por desenvolvedor, relativo ao grupo, com crédito limitado por diff de arquivo/commit, P75, componentes explícitos, rastreio por SHA e política versionada reutilizável. O índice não comprova produtividade individual ou impacto de negócio; a dimensão GitHub é opcional e indisponível sem dados completos.
+- **Contribuição anual (candidata 0.3.0, branch de desenvolvimento)**: aba inicial com commits integrados, churn bruto/move/whitespace, mudanças substantivas e cosméticas, atividade de autores, arquivos de código/testes/docs/gerados, PRs/revisões opcionais e evolução mensal; todos os commits alcançáveis pela referência selecionada são indexados em SQLite local com atualização incremental por SHA.
 
 - **Projetos com vários repositórios**, com leitura de pastas locais ou espelhos GitHub criados ao clicar em Adicionar.
 - **Visão consolidada**: commits, contribuidores, linhas adicionadas/removidas, churn, histórico diário e comparação entre repositórios.
@@ -119,7 +122,7 @@ Isso cria **3 pequenos repositórios Git sintéticos**, com autores e commits fi
 | Possíveis renomes de identificadores | Regra lexical estrita para substituições consistentes de nomes. Uma troca de identificador também pode alterar o programa, API pública ou segurança. Revisar diff. |
 | Arquivos de teste alterados | Evidência de edição de arquivos com nomes/pastas de teste, não de execução, cobertura ou sucesso. |
 
-A análise ajustada é **sob demanda e limitada inicialmente aos 100 commits filtrados mais recentes** (configurável para 25, 100, 250 ou 500). Exibe cobertura explícita para não comparar amostras diferentes como se fossem todo o histórico. O cálculo pode ser custoso em repositórios grandes.
+A aba legada **Mudanças ajustadas** continua sendo um diagnóstico rápido, limitado aos 25/100/250/500 commits mais recentes. **A nova aba Contribuição anual da 0.3.0 não usa essa amostragem:** indexa integralmente os SHAs da referência Git selecionada e consulta o SQLite local. Os indicadores não constituem avaliação objetiva da produtividade individual. Consulte [metodologia e cobertura](docs/features/annual-contribution.md).
 
 Para analisar contribuição com mais confiança, cruzar essas métricas com PRs revisados/mesclados, resultados de testes/CI, correções de regressões e impacto real de entregas. Nenhum número de linhas sozinho mede valor entregue.
 
@@ -146,6 +149,8 @@ Para analisar contribuição com mais confiança, cruzar essas métricas com PRs
 
 ## Testes e validação
 
+Os resultados da candidata 0.3.0 estão em [VALIDATION-0.3.0.md](VALIDATION-0.3.0.md). A execução local registrou 54 testes aprovados e benchmark sintético de 50.000 commits; Streamlit real/gh autenticado não foram exercitados neste sandbox.
+
 ```sh
 python -m pip install -r requirements-dev.txt
 python -m pytest -q
@@ -156,7 +161,7 @@ Os testes integram Git real em repositórios temporários para validar branches 
 
 ## Limitações e evolução
 
-Esta versão é direcionada para **analytics local de engenharia**, não para gerenciamento operacional de tarefas. Ainda não possui login multiusuário, perfis, métricas reais de CI/CD, incrementalização em SQLite nem dashboard executável empacotado como EXE. A comparação `merge-base`/ahead-behind já está presente. A inspeção por identificador é heurística e não substitui análise semântica de código. É uma aplicação Python/Streamlit, não um executável Tauri.
+Esta versão é direcionada para **analytics local de engenharia**, não para gerenciamento operacional de tarefas. Ainda não possui login multiusuário, perfis, métricas reais de CI/CD nem dashboard executável empacotado como EXE. O processamento anual incremental em SQLite está disponível na branch de desenvolvimento 0.3.0. A comparação `merge-base`/ahead-behind já está presente. A inspeção por identificador é heurística e não substitui análise semântica de código. É uma aplicação Python/Streamlit, não um executável Tauri.
 
 ## Proveniência
 

@@ -1,0 +1,16 @@
+{
+  "methodology": "ICE-Git/1",
+  "min_cohort": 3,
+  "reference_quantile": 0.75,
+  "max_lines_per_file": 120,
+  "max_weighted_lines_per_commit": 150.0,
+  "source_file_weight": 1.0,
+  "test_file_weight": 0.85,
+  "docs_file_weight": 0.65,
+  "support_ratio_target": 0.25,
+  "weight_delivery": 0.30,
+  "weight_technical_diff": 0.30,
+  "weight_support_evidence": 0.25,
+  "weight_collaboration": 0.15,
+  "max_trace_files": 20
+}
