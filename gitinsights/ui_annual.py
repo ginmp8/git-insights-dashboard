@@ -82,9 +82,12 @@ def render_annual(project: dict, repos: list[dict], db_path: Path) -> None:
     year=int(st.number_input('Ano de referência',min_value=2000,max_value=2100,
                              value=date.today().year,step=1,key=f'annual-year-{project["id"]}'))
     selections=[]
+    live_refs={}
     for repo in repos:
         try:
-            refs=[x['ref'] for x in get_branches(repo['path'])]
+            branches=get_branches(repo['path'])
+            refs=[x['ref'] for x in branches]
+            live_refs.update({(repo['id'],x['ref']):x['sha'] for x in branches})
             default=choose_integration_ref(repo['path'])
         except (GitError,OSError) as exc:
             st.error(f'{repo["name"]}: {exc}')
@@ -129,13 +132,29 @@ def render_annual(project: dict, repos: list[dict], db_path: Path) -> None:
 
     with MetricsStore(db_path) as store:
         report=annual_report(store,[(r['id'],ref) for r,ref in selections],year)
+        # A full snapshot becomes stale when a local ref advances or is rebased.
+        # Never display its old membership as current 100% coverage.
+        stale=[]
+        for state in report['repo_coverage']:
+            observed=live_refs.get((state['repo_id'],state['ref']))
+            if observed and observed != state['head_sha']:
+                stale.append({'repo_id':state['repo_id'],'ref':state['ref'],
+                              'cached_head':state['head_sha'],'current_head':observed})
+        report['stale_refs']=stale
+        if stale:
+            report['complete']=False
+            report['coverage_percent']=None
+            st.warning(f'Índice desatualizado para {len(stale)} referência(s): novos commits, rebase ou movimentação de branch. '
+                       'Clique em Indexar / atualizar antes de comparar desenvolvedores.')
         st.caption('Esta visão anual usa o índice SQLite completo, não o limite de 2.000–10.000 commits das visões legadas.')
-        if not report['complete']:
+        if not report['complete'] and report['missing_repositories']:
             st.warning(f"Cobertura anual ainda não comprovada: {len(report['missing_repositories'])} "
                        'referência(s) não indexada(s) por completo. Clique em Indexar / atualizar.')
-        elif report['repo_coverage']:
+        elif report['complete'] and report['repo_coverage']:
             st.caption('Cobertura: 100% dos commits alcançáveis indexados, filtrados pelo ano da data do autor. '
                        'Não inclui alterações fora das referências selecionadas nem commits eliminados por squash.')
+        if not report['pr_metadata_complete']:
+            st.caption('PRs e revisões não possuem snapshot completo para todos os repositórios; células vazias significam dados indisponíveis, não zero.')
         contributors=report['contributors']
         if not contributors:
             st.info('Não há commits indexados para o ano/filtros. Se for o primeiro uso, clique em Indexar / atualizar.')

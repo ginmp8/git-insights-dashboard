@@ -11,7 +11,7 @@ Baseline importada do código publicado na 0.2.0: **27 testes passaram** antes d
 - **Persistência:** reiniciar a aplicação mantém métricas; dados armazenados em SQLite local.
 - **Correção de medidas:** fixture Git real cobre move puro R100, whitespace, código, arquivos de teste, lockfiles e nomes incomuns.
 - **Identidade e colaboração:** os autores por e-mail podem ser associados manualmente a e-mail canônico e login GitHub; PRs e revisões só são atribuídos quando ambos o login e snapshot estiverem disponíveis.
-- **Falhas:** interrupção de lote preserva o último snapshot completo.
+- **Falhas:** interrupção de lote preserva o último snapshot completo. O teste headless de UI também verifica que um novo commit na branch torna o snapshot antigo explicitamente desatualizado, sem alegar 100% de cobertura atual.
 
 ## Checks executados
 
